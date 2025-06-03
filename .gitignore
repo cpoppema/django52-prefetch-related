@@ -1,3 +1,6 @@
 *.egg-info
 .ruff_cache
 *.sqlite3
+__pycache__
+build
+.tox

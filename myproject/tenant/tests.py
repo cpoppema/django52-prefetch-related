@@ -1,4 +1,3 @@
-import pytest
 from django.test import TestCase
 from django.db.models import Prefetch
 from django.test.utils import CaptureQueriesContext
@@ -17,7 +16,6 @@ class MyTenantTestCase(TestCase):
         cls.client_1 = Client.objects.create(name="client", owner=cls.subpartner, client_field="abc")
         cls.client_2 = Client.objects.create(name="client", owner=cls.subpartner, client_field="def")
 
-    @pytest.mark.xfail(strict=True)
     def test_client_owner(self):
         """
         This test will always fail:
@@ -37,7 +35,8 @@ class MyTenantTestCase(TestCase):
         self.assertEqual(qs.count(), 2)
 
         for item in qs:
-            self.assertEqual(item.owner.partner_field, "456")
+            self.assertFalse(hasattr(item.owner, "partner_field"))
+            # self.assertEqual(item.owner.partner_field, "456")
 
     def test_client_owner_with_prefetch(self):
         """
@@ -86,4 +85,4 @@ class MyTenantTestCase(TestCase):
                     self.assertEqual(item.owner.partner_field, "456")
             finally:
                 for query in ctx.captured_queries:
-                    print(f"{query['sql']=}")
+                    print(f"{query['sql']};")
